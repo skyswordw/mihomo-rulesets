@@ -1,0 +1,11 @@
+{
+  "reject_domainset": {
+    "source_url": "https://ruleset.skk.moe/Clash/domainset/reject.txt",
+    "behavior": "domain",
+    "input_format": "text",
+    "output_format": "mrs",
+    "minimum_entries": 100000,
+    "minimum_source_bytes": 2000000,
+    "minimum_artifact_bytes": 500000
+  }
+}

@@ -9,6 +9,6 @@
   "source_bytes": 2670525,
   "artifact_sha256": "993790e32ad561ba923fa3a071533c362abb333391d8c096d56bd42655a19fab",
   "artifact_bytes": 1163736,
-  "mihomo_version": "Mihomo Meta v1.19.27 darwin arm64 with go1.26.4 Sat Jun  6 07:49:01 UTC 2026",
-  "generated_at": "2026-08-05T06:26:28Z"
+  "mihomo_version": "Mihomo Meta v1.19.27 linux amd64 with go1.26.4 Sat Jun  6 07:45:21 UTC 2026",
+  "generated_at": "2026-08-05T06:27:13Z"
 }

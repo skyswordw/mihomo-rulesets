@@ -4,8 +4,39 @@
     "behavior": "domain",
     "input_format": "text",
     "output_format": "mrs",
+    "source_license": "AGPL-3.0",
     "minimum_entries": 100000,
     "minimum_source_bytes": 2000000,
     "minimum_artifact_bytes": 500000
+  },
+  "china_ip": {
+    "source_url": "https://testingcf.jsdelivr.net/gh/Seameee/override-hub@refs/heads/main/mergecnip/china_ip.txt",
+    "behavior": "ipcidr",
+    "input_format": "text",
+    "output_format": "mrs",
+    "source_license": "NOASSERTION",
+    "minimum_entries": 15000,
+    "minimum_source_bytes": 250000,
+    "minimum_artifact_bytes": 10000
+  },
+  "download_domainset": {
+    "source_url": "https://ruleset.skk.moe/Clash/domainset/download.txt",
+    "behavior": "domain",
+    "input_format": "text",
+    "output_format": "mrs",
+    "source_license": "AGPL-3.0",
+    "minimum_entries": 1200,
+    "minimum_source_bytes": 30000,
+    "minimum_artifact_bytes": 10000
+  },
+  "apple_cdn": {
+    "source_url": "https://ruleset.skk.moe/Clash/domainset/apple_cdn.txt",
+    "behavior": "domain",
+    "input_format": "text",
+    "output_format": "mrs",
+    "source_license": "AGPL-3.0",
+    "minimum_entries": 100,
+    "minimum_source_bytes": 2500,
+    "minimum_artifact_bytes": 1000
   }
 }

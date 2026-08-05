@@ -1,0 +1,14 @@
+{
+  "source_url": "https://ruleset.skk.moe/Clash/domainset/apple_cdn.txt",
+  "behavior": "domain",
+  "input_format": "text",
+  "output_format": "mrs",
+  "source_license": "AGPL-3.0",
+  "source_sha256": "6773743ce9a2ab506195b6d9b49b3d775b9a6b4b7308d4755be0032a09f4037e",
+  "source_entries": 159,
+  "source_bytes": 4755,
+  "artifact_sha256": "012c8bfa8593408cc7180baeb0c3b1942f71a66c8fb64cd6cbd51981fee3a397",
+  "artifact_bytes": 1587,
+  "mihomo_version": "Mihomo Meta v1.19.27 darwin arm64 with go1.26.4 Sat Jun  6 07:49:01 UTC 2026",
+  "generated_at": "2026-08-05T06:26:30Z"
+}

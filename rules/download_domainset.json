@@ -1,0 +1,14 @@
+{
+  "source_url": "https://ruleset.skk.moe/Clash/domainset/download.txt",
+  "behavior": "domain",
+  "input_format": "text",
+  "output_format": "mrs",
+  "source_license": "AGPL-3.0",
+  "source_sha256": "95e9715dfee7fb50655145c1b7969952518ba01b5e804de01536c23f7395870d",
+  "source_entries": 1968,
+  "source_bytes": 46243,
+  "artifact_sha256": "c4a5de89db6f8468b69989cbd90b63aa855073812efd9e4b3ec2955fbad97f66",
+  "artifact_bytes": 20059,
+  "mihomo_version": "Mihomo Meta v1.19.27 darwin arm64 with go1.26.4 Sat Jun  6 07:49:01 UTC 2026",
+  "generated_at": "2026-08-05T06:26:29Z"
+}

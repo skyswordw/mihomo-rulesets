@@ -2,44 +2,56 @@
 
 [![Update MRS rulesets](https://github.com/skyswordw/mihomo-rulesets/actions/workflows/update-rulesets.yml/badge.svg)](https://github.com/skyswordw/mihomo-rulesets/actions/workflows/update-rulesets.yml)
 
-Ready-to-use, reproducibly built `.mrs` rule providers for Mihomo. Keep the
-upstream rule coverage, download smaller artifacts, and follow stable rolling
-URLs that are checked every six hours.
+规则越来越多时，问题不只是配置文件变大。Mihomo 加载大型文本规则后，还要承担解析和内存开销。
 
-为 Mihomo 提供可直接引用的 MRS 规则集：不删减上游规则，自动跟踪更新，并发布来源、体积与 SHA-256 元数据。
+在我们的 Sparkle / Mihomo 1.19.27 配置中，大型广告规则首次命中后，进程内存（RSS）曾超过 200 MiB。我们没有删减规则，而是把适合的规则转换成 Mihomo 原生的 MRS 二进制格式，并用自动化持续跟进上游。完成四份转换并刷新客户端后，短时 RSS 采样约为 68–73 MiB。
 
-## Why use this repository?
+> 这是一次实际配置的优化结果，不是通用跑分。节点、策略组、流量、缓存和 Go GC 都会影响最终内存占用。
 
-- **Drop-in MRS providers:** use the published URLs directly in Mihomo or a
-  Mihomo-based client.
-- **No intentional rule reduction:** each artifact is converted from its
-  declared text source without filtering or rewriting entries.
-- **Guarded rolling updates:** a bad or unexpectedly truncated source does not
-  replace the last working release.
-- **Auditable output:** every artifact includes source provenance, entry and
-  byte counts, converter version, and SHA-256 metadata.
-- **Reproducible builds:** the workflow pins both the Mihomo version and its
-  archive checksum, then verifies deterministic conversion.
+## 做了什么
 
-In the **2026-08-05** metadata snapshot, source files total **3,067,910 bytes**;
-the corresponding MRS artifacts total **1,202,340 bytes**, a **60.8%**
-reduction in downloaded and stored rule data.
+- 保留上游规则覆盖，不过滤、不改写条目。
+- 将广告域名、中国 IP、下载域名和 Apple CDN 四份规则统一转换为 MRS。
+- 每 6 小时检查上游，有变化才提交并更新发布。
+- 发布前检查源文件体积、条目数、转换确定性和 Mihomo 加载结果。
+- 任一步失败都保留上一版 rolling release，不发布可疑产物。
 
-| Ruleset | Typical use | Behavior | Entries | Text source | MRS | Reduction |
-| --- | --- | --- | ---: | ---: | ---: | ---: |
-| `reject_domainset` | Advertising and tracking rejection | `domain` | 115,929 | 2,670,525 B | 1,163,736 B | 56.4% |
-| `china_ip` | Mainland China IPv4 routing | `ipcidr` | 21,818 | 346,387 B | 16,958 B | 95.1% |
-| `download_domainset` | Download and update traffic | `domain` | 1,968 | 46,243 B | 20,059 B | 56.6% |
-| `apple_cdn` | Apple CDN traffic | `domain` | 159 | 4,755 B | 1,587 B | 66.6% |
+2026-08-05 快照中，四份规则文件合计从约 3.07 MB 降至 1.20 MB，缩小约 **60.8%**。
 
-Check the rolling JSON metadata for current measurements after upstream
-updates. Runtime memory savings vary with the Mihomo version, the rest of the
-profile, rule hits, caches, and Go garbage collection; artifact size is not a
-direct RSS estimate.
+| 规则 | 用途 | 文本源 | MRS | 缩小 |
+| --- | --- | ---: | ---: | ---: |
+| [`reject_domainset`](https://github.com/skyswordw/mihomo-rulesets/releases/download/rolling/reject_domainset.mrs) | 广告与追踪域名 | 2,670,525 B | 1,163,736 B | 56.4% |
+| [`china_ip`](https://github.com/skyswordw/mihomo-rulesets/releases/download/rolling/china_ip.mrs) | 中国大陆 IPv4 | 346,387 B | 16,958 B | 95.1% |
+| [`download_domainset`](https://github.com/skyswordw/mihomo-rulesets/releases/download/rolling/download_domainset.mrs) | 下载与更新域名 | 46,243 B | 20,059 B | 56.6% |
+| [`apple_cdn`](https://github.com/skyswordw/mihomo-rulesets/releases/download/rolling/apple_cdn.mrs) | Apple CDN | 4,755 B | 1,587 B | 66.6% |
 
-## Quick start
+最新条目数、体积、来源和 SHA-256 见 rolling release 中的同名 JSON 元数据。
 
-Copy the providers you need into a Mihomo profile:
+## 快速使用
+
+在 Mihomo 配置中加入需要的 provider：
+
+```yaml
+rule-providers:
+  reject_domainset:
+    type: http
+    behavior: domain
+    format: mrs
+    url: https://github.com/skyswordw/mihomo-rulesets/releases/download/rolling/reject_domainset.mrs
+    path: ./ruleset/reject_domainset.mrs
+    interval: 21600
+```
+
+再把规则放在通用兜底规则之前：
+
+```yaml
+rules:
+  - RULE-SET,reject_domainset,REJECT
+  - MATCH,PROXY # 请替换为已有策略组
+```
+
+<details>
+<summary>展开四份完整 provider 配置</summary>
 
 ```yaml
 rule-providers:
@@ -76,123 +88,49 @@ rule-providers:
     interval: 21600
 ```
 
-Then reference them before broader fallback rules. Adapt the policies to your
-own groups:
+</details>
 
-```yaml
-rules:
-  - RULE-SET,reject_domainset,REJECT
-  - RULE-SET,apple_cdn,DIRECT
-  - RULE-SET,download_domainset,DIRECT
-  - RULE-SET,china_ip,DIRECT,no-resolve
-  - MATCH,PROXY # Replace PROXY with an existing policy group.
+如果 GitHub 需要代理访问，可在 provider 中增加 `proxy: 已有策略组名`。切换格式时，`format` 和本地路径都要改成 `mrs`，不要继续复用旧 `.txt` 缓存路径。
+
+## 兼容性
+
+- 支持 Mihomo / Clash.Meta，以及使用兼容 Mihomo 内核的客户端。
+- 不支持原版 Dreamacro Clash、sing-box 或 Surge，它们需要各自的规则格式。
+
+## 更新与校验
+
+rolling URL 适合自动更新：
+
+```text
+https://github.com/skyswordw/mihomo-rulesets/releases/download/rolling/<ruleset>.mrs
 ```
 
-If GitHub downloads must use a proxy, add `proxy: YOUR_PROXY_GROUP` to each
-provider. The named group must already exist in your profile.
-
-## Download links
-
-| Artifact | Rolling MRS | Metadata |
-| --- | --- | --- |
-| `reject_domainset` | [Download](https://github.com/skyswordw/mihomo-rulesets/releases/download/rolling/reject_domainset.mrs) | [JSON](https://github.com/skyswordw/mihomo-rulesets/releases/download/rolling/reject_domainset.json) |
-| `china_ip` | [Download](https://github.com/skyswordw/mihomo-rulesets/releases/download/rolling/china_ip.mrs) | [JSON](https://github.com/skyswordw/mihomo-rulesets/releases/download/rolling/china_ip.json) |
-| `download_domainset` | [Download](https://github.com/skyswordw/mihomo-rulesets/releases/download/rolling/download_domainset.mrs) | [JSON](https://github.com/skyswordw/mihomo-rulesets/releases/download/rolling/download_domainset.json) |
-| `apple_cdn` | [Download](https://github.com/skyswordw/mihomo-rulesets/releases/download/rolling/apple_cdn.mrs) | [JSON](https://github.com/skyswordw/mihomo-rulesets/releases/download/rolling/apple_cdn.json) |
-
-Use the rolling URLs for automatic updates. For a deployment that must never
-change without review, pin a repository commit instead:
+需要固定版本时，可锁定仓库提交：
 
 ```text
 https://raw.githubusercontent.com/skyswordw/mihomo-rulesets/<commit>/rules/<ruleset>.mrs
 ```
 
-## Compatibility
-
-| Client or format | Support |
-| --- | --- |
-| Mihomo / Clash.Meta | Yes |
-| Mihomo-based GUI clients | Yes, when their bundled core supports MRS |
-| Original Dreamacro Clash | No |
-| sing-box | No; use a native sing-box ruleset |
-| Surge | No; use a native Surge ruleset |
-
-MRS is a Mihomo-specific binary ruleset format. This repository does not try
-to make the same artifact serve incompatible rule engines.
-
-## Common issues
-
-- **The provider does not load:** confirm that `format: mrs`, the declared
-  `behavior`, and the local `.mrs` path all match the example. Do not reuse an
-  old `.txt` cache path after switching formats.
-- **GitHub is unreachable during startup:** route the provider download through
-  an existing policy group with `proxy: YOUR_PROXY_GROUP`.
-- **The client reports an unknown format:** update its Mihomo core. Original
-  Clash, sing-box, and Surge cannot read MRS files.
-- **RSS does not immediately fall:** verify that the active profile and local
-  cache actually use MRS, then compare multiple samples after similar rule
-  traffic. Go garbage collection can make one-time readings misleading.
-
-## Verify a release
-
-Download the four MRS files and `SHA256SUMS` into one directory, then run:
+下载四份 MRS 和 `SHA256SUMS` 后可验证：
 
 ```bash
+# Linux
 sha256sum --check SHA256SUMS
-```
 
-On macOS:
-
-```bash
+# macOS
 shasum -a 256 --check SHA256SUMS
 ```
 
-The rolling release also publishes one JSON file per ruleset with the source
-URL and SHA-256, entry count, source and artifact sizes, source-license status,
-Mihomo version, and generation time.
-
-## Update safety
-
-GitHub Actions checks every source declared in `sources.json` every six hours.
-Before publishing, the workflow requires all of the following:
-
-1. The source exceeds its minimum entry and byte thresholds.
-2. The downloaded Mihomo archive matches the pinned checksum.
-3. Two conversions of the same source produce identical MRS files.
-4. The artifact exceeds its expected minimum size.
-5. Mihomo successfully loads the generated provider in a test configuration.
-
-If any check fails, the existing rolling release remains available. If nothing
-changed, the workflow creates no commit.
-
-## Build locally
-
-Use Mihomo 1.19.27 or another version you explicitly want to test:
+本地重新生成：
 
 ```bash
 MIHOMO_BIN=/path/to/mihomo ./scripts/update-rulesets.sh
 ```
 
-The script reads `sources.json`, validates every source, writes artifacts and
-metadata under `rules/`, and updates `rules/SHA256SUMS` only when needed.
+## 来源与许可证
 
-To propose another ruleset, add a manifest entry with its behavior, source and
-artifact formats, license status, and conservative size thresholds, then run
-the same command locally before opening a pull request.
+源地址、转换类型和许可证状态记录在 [`sources.json`](sources.json)。
 
-Compatibility reports and well-sourced ruleset proposals are welcome through
-GitHub Issues and pull requests. Include the client name, Mihomo version, and a
-minimal provider configuration when reporting a loading problem.
-
-## Sources and licenses
-
-Canonical source URLs, conversion behaviors, and declared licenses are tracked
-in [`sources.json`](sources.json).
-
-- The Sukkaw sources are generated by
-  [`SukkaW/Surge`](https://github.com/SukkaW/Surge) under AGPL-3.0.
-- `china_ip` follows the source used by the original Sub-Store profile. That
-  source currently declares no license, so its metadata uses `NOASSERTION` and
-  this repository grants no additional rights over that source data.
-- The automation code in this repository is distributed under AGPL-3.0. See
-  [`LICENSE`](LICENSE) and each metadata file for source-specific provenance.
+- Sukkaw 规则来自 [`SukkaW/Surge`](https://github.com/SukkaW/Surge)，许可证为 AGPL-3.0。
+- `china_ip` 的直接来源仓库未声明许可证，因此元数据标记为 `NOASSERTION`，本仓库不额外授予其源数据权利。
+- 本仓库的自动化代码采用 AGPL-3.0，详见 [`LICENSE`](LICENSE)。

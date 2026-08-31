@@ -4,11 +4,11 @@
   "input_format": "text",
   "output_format": "mrs",
   "source_license": "NOASSERTION",
-  "source_sha256": "89fdfead1a9412b1d55baec8f0e98e9aae78c0d2caa91915b02a42e117219337",
+  "source_sha256": "d4804d5ed10871b2f533edf6a7f0315fe5ade59a45e4c546c3c627ef8f04afdb",
   "source_entries": 22131,
   "source_bytes": 351191,
   "artifact_sha256": "b5ad4d6abb5453658411c36782fc8f378d7107311e9055e4b0f4fe3b54a3e5dd",
   "artifact_bytes": 16975,
   "mihomo_version": "Mihomo Meta v1.19.27 linux amd64 with go1.26.4 Sat Jun  6 07:45:21 UTC 2026",
-  "generated_at": "2026-08-30T16:47:20Z"
+  "generated_at": "2026-08-31T14:04:55Z"
 }

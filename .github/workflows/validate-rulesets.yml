@@ -1,0 +1,50 @@
+name: Validate rulesets
+
+on:
+  pull_request:
+    paths:
+      - ".github/workflows/**"
+      - "scripts/**"
+      - "tests/**"
+      - "sources.json"
+
+permissions:
+  contents: read
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    env:
+      MIHOMO_VERSION: v1.19.27
+      MIHOMO_ARCHIVE_SHA256: fb3e34c55844f389ff54679e5a3aec331d5ec38006c20f8dcc476fb47768a58f
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Install pinned Mihomo converter
+        shell: bash
+        run: |
+          set -euo pipefail
+          archive="$RUNNER_TEMP/mihomo.gz"
+          binary="$RUNNER_TEMP/mihomo"
+          curl --fail --location --retry 3 --retry-all-errors \
+            "https://github.com/MetaCubeX/mihomo/releases/download/${MIHOMO_VERSION}/mihomo-linux-amd64-${MIHOMO_VERSION}.gz" \
+            --output "$archive"
+          printf '%s  %s\n' "$MIHOMO_ARCHIVE_SHA256" "$archive" | sha256sum --check --status
+          gzip --decompress --stdout "$archive" > "$binary"
+          chmod 0755 "$binary"
+          "$binary" -v
+          printf 'MIHOMO_BIN=%s\n' "$binary" >> "$GITHUB_ENV"
+
+      - name: Run regression tests
+        run: python3 -m unittest discover -s tests -v
+
+      - name: Build and validate rulesets
+        id: update
+        run: ./scripts/update-rulesets.sh
+
+      - name: Check generated diff
+        if: steps.update.outputs.changed == 'true'
+        run: git diff --check
+

@@ -11,7 +11,7 @@ if [[ -z "$mihomo_bin" || ! -x "$mihomo_bin" ]]; then
   exit 1
 fi
 
-for command_name in curl jq awk cmp sort; do
+for command_name in curl jq awk cmp sort python3; do
   if ! command -v "$command_name" >/dev/null 2>&1; then
     echo "Required command is missing: $command_name" >&2
     exit 1
@@ -30,8 +30,10 @@ tmp_dir=$(mktemp -d "${TMPDIR:-/tmp}/mihomo-rulesets.XXXXXX")
 trap 'rm -r -- "$tmp_dir"' EXIT
 
 mihomo_version=$("$mihomo_bin" -v | head -n 1)
-mkdir -p "$output_dir"
-changed=true
+staged_dir="$tmp_dir/staged"
+mkdir -p "$staged_dir"
+# Keep last-known-good files untouched until every source and artifact passes.
+cp -a "$output_dir/." "$staged_dir/"
 changed=false
 ruleset_count=0
 ruleset_names_file="$tmp_dir/ruleset-names.txt"
@@ -41,18 +43,31 @@ jq -e '
   type == "object" and length > 0 and
   all(to_entries[];
     (.key | test("^[a-z0-9_]+$")) and
-    (.value.source_url | type == "string" and length > 0) and
+    (
+      (.value | has("source_url") and (has("sources") | not)) and
+      (.value.source_url | type == "string" and startswith("https://"))
+      or
+      (.value | has("sources") and (has("source_url") | not)) and
+      (.value.behavior == "ipcidr") and
+      (.value.sources | type == "array" and length > 0 and
+        all(.[];
+          (.url | type == "string" and startswith("https://")) and
+          (.minimum_entries | type == "number" and . > 0 and . <= 2147483647 and . == floor) and
+          (.minimum_source_bytes | type == "number" and . > 0 and . <= 2147483647 and . == floor) and
+          (.source_license | type == "string" and length > 0))) and
+      (.value.max_address_change_fraction | type == "number" and . >= 0 and . <= 1)
+    ) and
     (.value.behavior == "domain" or .value.behavior == "ipcidr") and
     (.value.input_format == "text") and
     (.value.output_format == "mrs") and
     (.value.source_license | type == "string" and length > 0) and
-    (.value.minimum_entries | type == "number" and . > 0) and
-    (.value.minimum_source_bytes | type == "number" and . > 0) and
-    (.value.minimum_artifact_bytes | type == "number" and . > 0)
+    (.value.minimum_entries | type == "number" and . > 0 and . <= 2147483647 and . == floor) and
+    (.value.minimum_source_bytes | type == "number" and . > 0 and . <= 2147483647 and . == floor) and
+    (.value.minimum_artifact_bytes | type == "number" and . > 0 and . <= 2147483647 and . == floor)
   )
 ' "$manifest" >/dev/null
 
-while IFS=$'\t' read -r name source_url behavior input_format output_format \
+while IFS=$'\t' read -r name source_urls behavior input_format output_format \
   source_license minimum_entries minimum_source_bytes minimum_artifact_bytes; do
   ruleset_count=$((ruleset_count + 1))
   printf '%s\n' "$name" >> "$ruleset_names_file"
@@ -61,17 +76,53 @@ while IFS=$'\t' read -r name source_url behavior input_format output_format \
   artifact_file="$tmp_dir/$name.$output_format"
   artifact_check="$tmp_dir/$name.check.$output_format"
 
-  curl \
-    --fail \
-    --location \
-    --silent \
-    --show-error \
-    --retry 3 \
-    --retry-all-errors \
-    --connect-timeout 15 \
-    --max-time 120 \
-    "$source_url" \
-    --output "$source_file"
+  source_details="$tmp_dir/$name.sources.json"
+  coverage_details="$tmp_dir/$name.coverage.json"
+  printf 'null\n' > "$source_details"
+  printf 'null\n' > "$coverage_details"
+  source_files=()
+  while IFS= read -r source_url; do
+    download_file="$tmp_dir/$name.source.${#source_files[@]}"
+    echo "Fetching $name: $source_url"
+    if ! curl \
+      --fail \
+      --location \
+      --silent \
+      --show-error \
+      --retry 3 \
+      --retry-all-errors \
+      --connect-timeout 15 \
+      --max-time 120 \
+      "$source_url" \
+      --output "$download_file"; then
+      echo "$name source download failed: $source_url" >&2
+      exit 1
+    fi
+    source_files+=("$download_file")
+  done < <(jq -r '.[]' <<< "$source_urls")
+
+  if jq -e --arg name "$name" '.[$name] | has("sources")' "$manifest" >/dev/null; then
+    python3 "$repo_root/scripts/merge-ipv4.py" merge \
+      --sources-json "$(jq -c --arg name "$name" '.[$name].sources' "$manifest")" \
+      --metadata "$source_details" "${source_files[@]}" > "$source_file"
+    # Decode the checked-in previous successful artifact: no remote fallback or
+    # bootstrapping to an unreviewed baseline if this evidence is missing.
+    baseline_artifact="$output_dir/$name.$output_format"
+    expected_baseline_sha=$(jq -er '.artifact_sha256' "$output_dir/$name.json")
+    if [[ "$(sha256_file "$baseline_artifact")" != "$expected_baseline_sha" ]]; then
+      echo "$name previous artifact checksum mismatch" >&2
+      exit 1
+    fi
+    baseline_text="$tmp_dir/$name.previous.txt"
+    "$mihomo_bin" convert-ruleset ipcidr mrs "$baseline_artifact" "$baseline_text"
+    python3 "$repo_root/scripts/merge-ipv4.py" coverage \
+      --previous "$baseline_text" --current "$source_file" \
+      --max-change-fraction "$(jq -r --arg name "$name" '.[$name].max_address_change_fraction' "$manifest")" \
+      > "$coverage_details"
+    echo "$name coverage: $(cat "$coverage_details")"
+  else
+    cp "${source_files[0]}" "$source_file"
+  fi
 
   source_bytes=$(wc -c < "$source_file" | tr -d ' ')
   source_entries=$(awk '!/^[[:space:]]*($|#)/ { count++ } END { print count + 0 }' "$source_file")
@@ -91,6 +142,13 @@ while IFS=$'\t' read -r name source_url behavior input_format output_format \
   if ! cmp -s "$artifact_file" "$artifact_check"; then
     echo "$name Mihomo conversion is not deterministic" >&2
     exit 1
+  fi
+
+  if [[ "$(cat "$source_details")" != null ]]; then
+    roundtrip_text="$tmp_dir/$name.roundtrip.txt"
+    "$mihomo_bin" convert-ruleset ipcidr mrs "$artifact_file" "$roundtrip_text"
+    python3 "$repo_root/scripts/merge-ipv4.py" coverage \
+      --previous "$source_file" --current "$roundtrip_text" --max-change-fraction 0 >/dev/null
   fi
 
   artifact_bytes=$(wc -c < "$artifact_file" | tr -d ' ')
@@ -127,6 +185,8 @@ while IFS=$'\t' read -r name source_url behavior input_format output_format \
 
   source_sha256=$(sha256_file "$source_file")
   artifact_sha256=$(sha256_file "$artifact_file")
+  recorded_source_details='null'
+  recorded_source_urls=''
   recorded_source_sha256=''
   recorded_behavior=''
   recorded_input_format=''
@@ -134,6 +194,8 @@ while IFS=$'\t' read -r name source_url behavior input_format output_format \
   recorded_source_license=''
   recorded_mihomo_version=''
   if [[ -f "$output_dir/$name.json" ]]; then
+    recorded_source_details=$(jq -c '.sources // null' "$output_dir/$name.json")
+    recorded_source_urls=$(jq -c '.source_urls // [.source_url]' "$output_dir/$name.json")
     recorded_source_sha256=$(jq -r '.source_sha256 // empty' "$output_dir/$name.json")
     recorded_behavior=$(jq -r '.behavior // empty' "$output_dir/$name.json")
     recorded_input_format=$(jq -r '.input_format // empty' "$output_dir/$name.json")
@@ -145,6 +207,8 @@ while IFS=$'\t' read -r name source_url behavior input_format output_format \
   ruleset_changed=true
   if [[ -f "$output_dir/$name.$output_format" ]] \
     && cmp -s "$artifact_file" "$output_dir/$name.$output_format" \
+    && [[ "$recorded_source_details" == "$(jq -c . "$source_details")" ]] \
+    && [[ "$recorded_source_urls" == "$source_urls" ]] \
     && [[ "$recorded_source_sha256" == "$source_sha256" ]] \
     && [[ "$recorded_behavior" == "$behavior" ]] \
     && [[ "$recorded_input_format" == "$input_format" ]] \
@@ -156,9 +220,11 @@ while IFS=$'\t' read -r name source_url behavior input_format output_format \
 
   if [[ "$ruleset_changed" == true ]]; then
     generated_at=$(date -u +'%Y-%m-%dT%H:%M:%SZ')
-    cp "$artifact_file" "$output_dir/$name.$output_format"
+    cp "$artifact_file" "$staged_dir/$name.$output_format"
     jq -n \
-      --arg source_url "$source_url" \
+      --argjson source_urls "$source_urls" \
+      --slurpfile sources "$source_details" \
+      --slurpfile coverage "$coverage_details" \
       --arg behavior "$behavior" \
       --arg input_format "$input_format" \
       --arg output_format "$output_format" \
@@ -171,7 +237,6 @@ while IFS=$'\t' read -r name source_url behavior input_format output_format \
       --argjson source_bytes "$source_bytes" \
       --argjson artifact_bytes "$artifact_bytes" \
       '{
-        source_url: $source_url,
         behavior: $behavior,
         input_format: $input_format,
         output_format: $output_format,
@@ -183,7 +248,11 @@ while IFS=$'\t' read -r name source_url behavior input_format output_format \
         artifact_bytes: $artifact_bytes,
         mihomo_version: $mihomo_version,
         generated_at: $generated_at
-      }' > "$output_dir/$name.json"
+      } + (if $sources[0] == null then
+        {source_url: $source_urls[0]}
+      else
+        {source_urls: $source_urls, sources: $sources[0], coverage: $coverage[0]}
+      end)' > "$staged_dir/$name.json"
     changed=true
   fi
 
@@ -193,7 +262,7 @@ done < <(jq -r '
   to_entries[] |
   [
     .key,
-    .value.source_url,
+    ((if .value.sources then [.value.sources[].url] else [.value.source_url] end) | tojson),
     .value.behavior,
     .value.input_format,
     .value.output_format,
@@ -213,7 +282,7 @@ checksums_file="$tmp_dir/SHA256SUMS"
 : > "$checksums_file"
 while IFS= read -r name; do
   output_format=$(jq -er --arg name "$name" '.[$name].output_format' "$manifest")
-  artifact_path="$output_dir/$name.$output_format"
+  artifact_path="$staged_dir/$name.$output_format"
   if [[ ! -f "$artifact_path" ]]; then
     echo "Expected artifact is missing: $artifact_path" >&2
     exit 1
@@ -223,8 +292,12 @@ while IFS= read -r name; do
 done < <(sort "$ruleset_names_file")
 
 if [[ ! -f "$output_dir/SHA256SUMS" ]] || ! cmp -s "$checksums_file" "$output_dir/SHA256SUMS"; then
-  cp "$checksums_file" "$output_dir/SHA256SUMS"
+  cp "$checksums_file" "$staged_dir/SHA256SUMS"
   changed=true
+fi
+
+if [[ "$changed" == true ]]; then
+  cp "$staged_dir/"* "$output_dir/"
 fi
 
 if [[ -n "${GITHUB_OUTPUT:-}" ]]; then

@@ -9,7 +9,8 @@ on:
       - main
     paths:
       - ".github/workflows/update-rulesets.yml"
-      - "scripts/update-rulesets.sh"
+      - "scripts/**"
+      - "tests/**"
       - "sources.json"
 
 permissions:
@@ -44,6 +45,9 @@ jobs:
           chmod 0755 "$binary"
           "$binary" -v
           printf 'MIHOMO_BIN=%s\n' "$binary" >> "$GITHUB_ENV"
+
+      - name: Run regression tests
+        run: python3 -m unittest discover -s tests -v
 
       - name: Build and validate rulesets
         id: update

@@ -1,14 +1,14 @@
 {
-  "source_url": "https://ruleset.skk.moe/Clash/domainset/download.txt",
   "behavior": "domain",
   "input_format": "text",
   "output_format": "mrs",
   "source_license": "AGPL-3.0",
-  "source_sha256": "4766d5aa8354947f89a6c016109c33671aa79604cdda52ee25a3c3f48cc5c911",
-  "source_entries": 1969,
-  "source_bytes": 46252,
-  "artifact_sha256": "7361f22746be43cf043a2b3993160805bc55923083533a8421476bc7ec6cf5b0",
-  "artifact_bytes": 19612,
+  "source_sha256": "2e95f5cdad0cb0e172a59b1e0d96892bd17db0c390de775acbbe04919ad3c534",
+  "source_entries": 1971,
+  "source_bytes": 46283,
+  "artifact_sha256": "602263cbf01ec594d5d16758e7be72da8391f7c53ad7b499898ea5e30b2c31ef",
+  "artifact_bytes": 19620,
   "mihomo_version": "Mihomo Meta v1.19.27 linux amd64 with go1.26.4 Sat Jun  6 07:45:21 UTC 2026",
-  "generated_at": "2026-09-18T16:32:25Z"
+  "generated_at": "2026-09-30T07:03:42Z",
+  "source_url": "https://ruleset.skk.moe/Clash/domainset/download.txt"
 }

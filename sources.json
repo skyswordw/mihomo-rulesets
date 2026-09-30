@@ -10,14 +10,34 @@
     "minimum_artifact_bytes": 500000
   },
   "china_ip": {
-    "source_url": "https://testingcf.jsdelivr.net/gh/Seameee/override-hub@refs/heads/main/mergecnip/china_ip.txt",
     "behavior": "ipcidr",
     "input_format": "text",
     "output_format": "mrs",
     "source_license": "NOASSERTION",
     "minimum_entries": 15000,
     "minimum_source_bytes": 250000,
-    "minimum_artifact_bytes": 10000
+    "minimum_artifact_bytes": 10000,
+    "sources": [
+      {
+        "url": "https://raw.githubusercontent.com/teishahbc/bgp-cn-ip/refs/heads/main/cn_as4134_as56040_ipv4.txt",
+        "minimum_entries": 1000,
+        "minimum_source_bytes": 15000,
+        "source_license": "NOASSERTION"
+      },
+      {
+        "url": "https://raw.githubusercontent.com/teishahbc/bgp-cn-ip/main/cn_other_asns_ipv4.txt",
+        "minimum_entries": 15000,
+        "minimum_source_bytes": 250000,
+        "source_license": "NOASSERTION"
+      },
+      {
+        "url": "https://ruleset.skk.moe/Clash/ip/china_ip.txt",
+        "minimum_entries": 3000,
+        "minimum_source_bytes": 40000,
+        "source_license": "CC-BY-SA-2.0"
+      }
+    ],
+    "max_address_change_fraction": 0.01
   },
   "download_domainset": {
     "source_url": "https://ruleset.skk.moe/Clash/domainset/download.txt",

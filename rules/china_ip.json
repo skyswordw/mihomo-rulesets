@@ -3,13 +3,13 @@
   "input_format": "text",
   "output_format": "mrs",
   "source_license": "NOASSERTION",
-  "source_sha256": "8bd37cf6817f797821db751c27f47b3c28ad7e349b381166b2bc68b95130c2de",
-  "source_entries": 22014,
-  "source_bytes": 349394,
-  "artifact_sha256": "19881fbbc53df9364125a734d7db814152318e63255eb4cf618af72b14b7ff32",
+  "source_sha256": "a9b87eaaa38f56b4602f418f9effcd5a66ca506867812169d45e7717457318a7",
+  "source_entries": 22041,
+  "source_bytes": 349814,
+  "artifact_sha256": "0fc4d5abe3f1b1eeaba186fdeb9bd76f37173bd6cfc637a579507df62ce910f0",
   "artifact_bytes": 17010,
   "mihomo_version": "Mihomo Meta v1.19.27 linux amd64 with go1.26.4 Sat Jun  6 07:45:21 UTC 2026",
-  "generated_at": "2026-10-12T15:43:30Z",
+  "generated_at": "2026-10-13T00:50:04Z",
   "source_urls": [
     "https://raw.githubusercontent.com/teishahbc/bgp-cn-ip/refs/heads/main/cn_as4134_as56040_ipv4.txt",
     "https://raw.githubusercontent.com/teishahbc/bgp-cn-ip/main/cn_other_asns_ipv4.txt",
@@ -18,16 +18,16 @@
   "sources": [
     {
       "source_url": "https://raw.githubusercontent.com/teishahbc/bgp-cn-ip/refs/heads/main/cn_as4134_as56040_ipv4.txt",
-      "source_sha256": "268f16ec7efdea5b831da2cbde8d3276b3e1173ef5413b2893af58704164489e",
-      "source_entries": 1314,
-      "source_bytes": 20558,
+      "source_sha256": "83b7320b37e89c3e3bf6d0459a7e35a8925a19e619d05d2c4e47e16e5de541de",
+      "source_entries": 1317,
+      "source_bytes": 20603,
       "source_license": "NOASSERTION"
     },
     {
       "source_url": "https://raw.githubusercontent.com/teishahbc/bgp-cn-ip/main/cn_other_asns_ipv4.txt",
-      "source_sha256": "73efa70d63b3dcc330667b6cdf45b54cbf2f124314199b011b647a86a5a1c45d",
-      "source_entries": 19046,
-      "source_bytes": 303366,
+      "source_sha256": "7a34629ebb9da4bd3ad57586dd4f76c250df85eb6348eaa00483c85993db0ca6",
+      "source_entries": 19077,
+      "source_bytes": 303852,
       "source_license": "NOASSERTION"
     },
     {
@@ -39,9 +39,9 @@
     }
   ],
   "coverage": {
-    "previous_ipv4_addresses": 282534144,
-    "current_ipv4_addresses": 282538240,
-    "added_ipv4_addresses": 4096,
+    "previous_ipv4_addresses": 282538240,
+    "current_ipv4_addresses": 282540288,
+    "added_ipv4_addresses": 2048,
     "removed_ipv4_addresses": 0
   }
 }

@@ -3,13 +3,13 @@
   "input_format": "text",
   "output_format": "mrs",
   "source_license": "NOASSERTION",
-  "source_sha256": "8acf7ac15d0659a44a520440a935d39f6fb2d92264c62fa96cca89d02df4d447",
-  "source_entries": 21976,
-  "source_bytes": 348731,
-  "artifact_sha256": "af17061a3992b9e41f9411fbd4a47d369134fdddf3ffd02093926c838badee27",
-  "artifact_bytes": 16915,
+  "source_sha256": "3fa0ab73ed2a2aa918b951769fb3a66188035b191774110a2c9a77d6c397f6d3",
+  "source_entries": 21986,
+  "source_bytes": 348889,
+  "artifact_sha256": "35f33124284d6ec72624d9826a80130a9589cc28a3938fef8e1dd63cba82ec63",
+  "artifact_bytes": 16941,
   "mihomo_version": "Mihomo Meta v1.19.27 linux amd64 with go1.26.4 Sat Jun  6 07:45:21 UTC 2026",
-  "generated_at": "2026-10-30T13:10:49Z",
+  "generated_at": "2026-10-30T22:28:52Z",
   "source_urls": [
     "https://raw.githubusercontent.com/teishahbc/bgp-cn-ip/refs/heads/main/cn_as4134_as56040_ipv4.txt",
     "https://raw.githubusercontent.com/teishahbc/bgp-cn-ip/main/cn_other_asns_ipv4.txt",
@@ -18,30 +18,30 @@
   "sources": [
     {
       "source_url": "https://raw.githubusercontent.com/teishahbc/bgp-cn-ip/refs/heads/main/cn_as4134_as56040_ipv4.txt",
-      "source_sha256": "a6a9e03c9e766b0a0e5e59c244d871cf56cd4105bca8fe929e4beab871de94e0",
-      "source_entries": 1314,
-      "source_bytes": 20558,
+      "source_sha256": "a7acf36bc5fabd67c2e2c0a9317ed630686d9971b1f36d935f1563f7349e0f48",
+      "source_entries": 1313,
+      "source_bytes": 20543,
       "source_license": "NOASSERTION"
     },
     {
       "source_url": "https://raw.githubusercontent.com/teishahbc/bgp-cn-ip/main/cn_other_asns_ipv4.txt",
-      "source_sha256": "afb4b9ffb08651e7aa338cbba9cf12286937a19db684232d9b1f45064ec63850",
-      "source_entries": 19027,
-      "source_bytes": 303045,
+      "source_sha256": "24c6a487f9876661fd1041e5ca7492e6023a6915bc2905a7918c9612b4bc3c6a",
+      "source_entries": 19034,
+      "source_bytes": 303157,
       "source_license": "NOASSERTION"
     },
     {
       "source_url": "https://ruleset.skk.moe/Clash/ip/china_ip.txt",
-      "source_sha256": "b2c164fbc952d5196f574087a8dd0c61be06d0697802c7d2d645aa76043e0393",
-      "source_entries": 3891,
-      "source_bytes": 60958,
+      "source_sha256": "da9d1286cd88f630eb40f25c86938efa1d3288a6b86d5b306238275fcb873471",
+      "source_entries": 3896,
+      "source_bytes": 61034,
       "source_license": "CC-BY-SA-2.0"
     }
   ],
   "coverage": {
-    "previous_ipv4_addresses": 282503168,
+    "previous_ipv4_addresses": 282502656,
     "current_ipv4_addresses": 282502656,
-    "added_ipv4_addresses": 512,
+    "added_ipv4_addresses": 1024,
     "removed_ipv4_addresses": 1024
   }
 }

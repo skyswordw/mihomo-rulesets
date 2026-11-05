@@ -3,12 +3,12 @@
   "input_format": "text",
   "output_format": "mrs",
   "source_license": "AGPL-3.0",
-  "source_sha256": "3233bc65dd26896f9f637392c6ee014e30693079d3ce063d784f3822884e6f7d",
-  "source_entries": 148070,
-  "source_bytes": 3464836,
-  "artifact_sha256": "abfe5c89be091131437ee196d6323fb940422c2bba852d6388c29c7f1e0c4aa6",
-  "artifact_bytes": 1493038,
+  "source_sha256": "d2bb36ab9e2a7cb5925ce71e5ff85b9068a5357805189ba8c36dbd5e41f5fd54",
+  "source_entries": 148145,
+  "source_bytes": 3466409,
+  "artifact_sha256": "2785f521cfde4cf1ee5e7203ea4ac6ff825d71a2bb767715d459476bb6e742c9",
+  "artifact_bytes": 1493802,
   "mihomo_version": "Mihomo Meta v1.19.27 linux amd64 with go1.26.4 Sat Jun  6 07:45:21 UTC 2026",
-  "generated_at": "2026-11-05T06:59:45Z",
+  "generated_at": "2026-11-05T20:05:40Z",
   "source_url": "https://ruleset.skk.moe/Clash/domainset/reject.txt"
 }

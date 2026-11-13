@@ -9,7 +9,7 @@
   "artifact_sha256": "185fc2df7583049937cd93f062279558b1bc466ef4992ddbf11f7ca7ff072673",
   "artifact_bytes": 16962,
   "mihomo_version": "Mihomo Meta v1.19.27 linux amd64 with go1.26.4 Sat Jun  6 07:45:21 UTC 2026",
-  "generated_at": "2026-11-12T20:06:45Z",
+  "generated_at": "2026-11-13T06:56:26Z",
   "source_urls": [
     "https://raw.githubusercontent.com/teishahbc/bgp-cn-ip/refs/heads/main/cn_as4134_as56040_ipv4.txt",
     "https://raw.githubusercontent.com/teishahbc/bgp-cn-ip/main/cn_other_asns_ipv4.txt",
@@ -18,16 +18,16 @@
   "sources": [
     {
       "source_url": "https://raw.githubusercontent.com/teishahbc/bgp-cn-ip/refs/heads/main/cn_as4134_as56040_ipv4.txt",
-      "source_sha256": "c57f9ff8941e43946cfe0d51cf798a07436cebbfbf2684fdb48cfbd38fef69bd",
-      "source_entries": 1305,
-      "source_bytes": 20413,
+      "source_sha256": "51d1376c734e9875738452afdf5561ddaac6aab1dace496557973a5558524988",
+      "source_entries": 1304,
+      "source_bytes": 20397,
       "source_license": "NOASSERTION"
     },
     {
       "source_url": "https://raw.githubusercontent.com/teishahbc/bgp-cn-ip/main/cn_other_asns_ipv4.txt",
-      "source_sha256": "5ec35a500eb931890b03f66fbda204fc927b810f7353b912e44643f944bdd550",
-      "source_entries": 19074,
-      "source_bytes": 303776,
+      "source_sha256": "53a0c807e2200ff5d2cb3d14e24ad55e061571ba916afcea17ad758937ab61ed",
+      "source_entries": 19073,
+      "source_bytes": 303760,
       "source_license": "NOASSERTION"
     },
     {
@@ -39,9 +39,9 @@
     }
   ],
   "coverage": {
-    "previous_ipv4_addresses": 282683648,
+    "previous_ipv4_addresses": 282695936,
     "current_ipv4_addresses": 282695936,
-    "added_ipv4_addresses": 12288,
+    "added_ipv4_addresses": 0,
     "removed_ipv4_addresses": 0
   }
 }

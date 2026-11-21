@@ -9,7 +9,7 @@
   "artifact_sha256": "6d6bea8cd17bb2d32a32c3851ca221b4cb7072fe0ddf37b05ba553ddc223a522",
   "artifact_bytes": 17111,
   "mihomo_version": "Mihomo Meta v1.19.27 linux amd64 with go1.26.4 Sat Jun  6 07:45:21 UTC 2026",
-  "generated_at": "2026-11-21T07:24:33Z",
+  "generated_at": "2026-11-21T19:28:32Z",
   "source_urls": [
     "https://raw.githubusercontent.com/teishahbc/bgp-cn-ip/refs/heads/main/cn_as4134_as56040_ipv4.txt",
     "https://raw.githubusercontent.com/teishahbc/bgp-cn-ip/main/cn_other_asns_ipv4.txt",
@@ -32,16 +32,16 @@
     },
     {
       "source_url": "https://ruleset.skk.moe/Clash/ip/china_ip.txt",
-      "source_sha256": "a6bed7d0a437cad87d14698b529d82b0f9d0eb9cc5c68124316c2edda5069127",
-      "source_entries": 3910,
-      "source_bytes": 61257,
+      "source_sha256": "e572f6356055b0360108849ff2221564c59fe66310fe6bc84183b7a8cb76f731",
+      "source_entries": 3911,
+      "source_bytes": 61272,
       "source_license": "CC-BY-SA-2.0"
     }
   ],
   "coverage": {
-    "previous_ipv4_addresses": 282451968,
+    "previous_ipv4_addresses": 282456064,
     "current_ipv4_addresses": 282456064,
-    "added_ipv4_addresses": 4096,
+    "added_ipv4_addresses": 0,
     "removed_ipv4_addresses": 0
   }
 }

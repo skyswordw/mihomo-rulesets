@@ -3,13 +3,13 @@
   "input_format": "text",
   "output_format": "mrs",
   "source_license": "NOASSERTION",
-  "source_sha256": "fa67ab82eea09d2be73670001a8fe0bf9bd2690baf0b1b092f8093b6d3607c34",
-  "source_entries": 22051,
-  "source_bytes": 349897,
-  "artifact_sha256": "6d6bea8cd17bb2d32a32c3851ca221b4cb7072fe0ddf37b05ba553ddc223a522",
-  "artifact_bytes": 17111,
+  "source_sha256": "11171b3ae22f2158649a7952d907c31d4e920e8d2c0ee2ae9440c5c28d27b122",
+  "source_entries": 22047,
+  "source_bytes": 349832,
+  "artifact_sha256": "fb0a16678f1e9e0177d7304e2d1c33e030c938dc75aaacfee4070ac7dfedcd76",
+  "artifact_bytes": 17028,
   "mihomo_version": "Mihomo Meta v1.19.27 linux amd64 with go1.26.4 Sat Jun  6 07:45:21 UTC 2026",
-  "generated_at": "2026-11-21T19:28:32Z",
+  "generated_at": "2026-11-22T07:05:24Z",
   "source_urls": [
     "https://raw.githubusercontent.com/teishahbc/bgp-cn-ip/refs/heads/main/cn_as4134_as56040_ipv4.txt",
     "https://raw.githubusercontent.com/teishahbc/bgp-cn-ip/main/cn_other_asns_ipv4.txt",
@@ -18,30 +18,30 @@
   "sources": [
     {
       "source_url": "https://raw.githubusercontent.com/teishahbc/bgp-cn-ip/refs/heads/main/cn_as4134_as56040_ipv4.txt",
-      "source_sha256": "b053ad769cdf67c364aaf36541516ee66eba062a69dcd569790aa9cbeb1a0876",
+      "source_sha256": "572d836acc53e3f96dec35448e150c9ce31e8220231f56b4399ba2901af90f44",
       "source_entries": 1312,
       "source_bytes": 20523,
       "source_license": "NOASSERTION"
     },
     {
       "source_url": "https://raw.githubusercontent.com/teishahbc/bgp-cn-ip/main/cn_other_asns_ipv4.txt",
-      "source_sha256": "a3928586b4b9aa8d5c0cf67bc4f3134cce3b8773c0b80429deb814d0735658aa",
-      "source_entries": 19083,
-      "source_bytes": 303912,
+      "source_sha256": "bb486e32e6a0b643cc50a18af5aa8a3615f6ceffa47fc28f89a0db5b34ad7ed4",
+      "source_entries": 19080,
+      "source_bytes": 303863,
       "source_license": "NOASSERTION"
     },
     {
       "source_url": "https://ruleset.skk.moe/Clash/ip/china_ip.txt",
-      "source_sha256": "e572f6356055b0360108849ff2221564c59fe66310fe6bc84183b7a8cb76f731",
-      "source_entries": 3911,
-      "source_bytes": 61272,
+      "source_sha256": "00e3a4e26843b529531a6bb46c6cf6c6234323fe707b656722be571495278c5e",
+      "source_entries": 3909,
+      "source_bytes": 61241,
       "source_license": "CC-BY-SA-2.0"
     }
   ],
   "coverage": {
     "previous_ipv4_addresses": 282456064,
-    "current_ipv4_addresses": 282456064,
+    "current_ipv4_addresses": 282449408,
     "added_ipv4_addresses": 0,
-    "removed_ipv4_addresses": 0
+    "removed_ipv4_addresses": 6656
   }
 }
